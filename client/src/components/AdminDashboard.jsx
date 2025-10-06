@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Container, Row, Col, Card, Button, Table, Modal, Form, Alert, Dropdown, Badge } from 'react-bootstrap';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -33,15 +33,31 @@ const AdminDashboard = () => {
     withLocation: 0
   });
 
-  useEffect(() => {
-    if (user && user.role === 'admin') {
-      loadDashboardData();
-    } else {
-      navigate('/admin-login');
-    }
-  }, [user, navigate, loadDashboardData]);
+  const showAlert = (message, type = 'info') => {
+    setAlert({ show: true, message, type });
+    setTimeout(() => setAlert({ show: false, message: '', type: 'info' }), 5000);
+  };
 
-  const loadDashboardData = async () => {
+  const calculateStats = (listingsData, bookingsData, usersData) => {
+    const verifiedListings = listingsData.filter(l => l.verified).length;
+    const activeUsers = usersData.filter(u => u.role === 'user').length;
+    const owners = usersData.filter(u => u.role === 'owner').length;
+    const withImages = Math.floor(listingsData.length * 0.8); // Mock calculation
+    const withLocation = Math.floor(listingsData.length * 0.6); // Mock calculation
+
+    setStats({
+      totalListings: listingsData.length,
+      verifiedListings,
+      totalUsers: usersData.length,
+      activeUsers,
+      owners,
+      totalBookings: bookingsData.length,
+      withImages,
+      withLocation
+    });
+  };
+
+  const loadDashboardData = useCallback(async () => {
     try {
       setLoading(true);
       // Load all data in parallel
@@ -69,31 +85,16 @@ const AdminDashboard = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const calculateStats = (listingsData, bookingsData, usersData) => {
-    const verifiedListings = listingsData.filter(l => l.verified).length;
-    const activeUsers = usersData.filter(u => u.role === 'user').length;
-    const owners = usersData.filter(u => u.role === 'owner').length;
-    const withImages = Math.floor(listingsData.length * 0.8); // Mock calculation
-    const withLocation = Math.floor(listingsData.length * 0.6); // Mock calculation
+  useEffect(() => {
+    if (user && user.role === 'admin') {
+      loadDashboardData();
+    } else {
+      navigate('/admin-login');
+    }
+  }, [user, navigate, loadDashboardData]);
 
-    setStats({
-      totalListings: listingsData.length,
-      verifiedListings,
-      totalUsers: usersData.length,
-      activeUsers,
-      owners,
-      totalBookings: bookingsData.length,
-      withImages,
-      withLocation
-    });
-  };
-
-  const showAlert = (message, type = 'info') => {
-    setAlert({ show: true, message, type });
-    setTimeout(() => setAlert({ show: false, message: '', type: 'info' }), 5000);
-  };
 
   const handleLogout = () => {
     logout();

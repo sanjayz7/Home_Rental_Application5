@@ -159,6 +159,82 @@ const deleteUser = async (req, res) => {
 // Get all bookings
 const getAllBookings = async (req, res) => {
   try {
+    // When using Mongo fallback or MOCK mode, return sample data for UI
+    if (process.env.MOCK_EXPORTS === '1' || (process.env.DB_DRIVER || '').toLowerCase() === 'mongo') {
+      const sample = [
+        {
+          id: '68e379dbbaf64d9fe7b72b93',
+          listingId: '1',
+          userEmail: 'john.doe@gmail.com',
+          userName: 'John Doe',
+          ownerEmail: 'ramesh.property@gmail.com',
+          date: '2024-01-15',
+          endDate: '2024-07-15',
+          amount: 0,
+          status: 'confirmed',
+          paymentStatus: 'paid',
+          specialRequests: 'Need parking space for 2 cars',
+          createdAt: '2025-10-06T08:12:11.266Z'
+        },
+        {
+          id: '68e379dbbaf64d9fe7b72b94',
+          listingId: '2',
+          userEmail: 'priya.sharma@gmail.com',
+          userName: 'Priya Sharma',
+          ownerEmail: 'lakshmi.homes@gmail.com',
+          date: '2024-02-01',
+          endDate: '2024-08-01',
+          amount: 0,
+          status: 'confirmed',
+          paymentStatus: 'paid',
+          specialRequests: 'Pet-friendly accommodation needed',
+          createdAt: '2025-10-06T08:12:11.266Z'
+        },
+        {
+          id: '68e379dbbaf64d9fe7b72b95',
+          listingId: '3',
+          userEmail: 'amit.patel@gmail.com',
+          userName: 'Amit Patel',
+          ownerEmail: 'david.estates@gmail.com',
+          date: '2024-03-01',
+          endDate: '2024-12-01',
+          amount: 0,
+          status: 'confirmed',
+          paymentStatus: 'paid',
+          specialRequests: 'Family with children, need safety measures',
+          createdAt: '2025-10-06T08:12:11.266Z'
+        },
+        {
+          id: '68e379dbbaf64d9fe7b72b96',
+          listingId: '4',
+          userEmail: 'neha.gupta@gmail.com',
+          userName: 'Neha Gupta',
+          ownerEmail: 'meera.rentals@gmail.com',
+          date: '2024-01-20',
+          endDate: '2024-06-20',
+          amount: 0,
+          status: 'confirmed',
+          paymentStatus: 'paid',
+          createdAt: '2025-10-06T08:12:11.266Z'
+        },
+        {
+          id: '68e379dbbaf64d9fe7b72b97',
+          listingId: '5',
+          userEmail: 'rajesh.kumar@gmail.com',
+          userName: 'Rajesh Kumar',
+          ownerEmail: 'sunil.properties@gmail.com',
+          date: '2024-04-01',
+          endDate: '2024-10-01',
+          amount: 0,
+          status: 'pending',
+          paymentStatus: 'pending',
+          specialRequests: 'Working from home setup needed',
+          createdAt: '2025-10-06T08:12:11.266Z'
+        }
+      ];
+      return res.json(sample);
+    }
+
     const query = `
       SELECT b.id, b.listing_id as listingId, b.user_email as userEmail, 
              b.amount, b.booking_date as date, b.status, b.created_at
